@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Card, Switch } from "@/components";
-import { RotateCcw, AlertCircle, Keyboard } from "lucide-react";
+import { RotateCcw, AlertCircle, Keyboard, Lock } from "lucide-react";
 import {
   getAllShortcutActions,
   getShortcutsConfig,
