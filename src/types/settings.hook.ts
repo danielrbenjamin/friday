@@ -29,5 +29,5 @@ export interface UseSettingsReturn {
   setShowDeleteConfirmDialog: React.Dispatch<React.SetStateAction<boolean>>;
   variables: { key: string; value: string }[];
   sttVariables: { key: string; value: string }[];
-  hasActiveLicense: boolean;
+  // License removed - now using only user's own API keys
 }

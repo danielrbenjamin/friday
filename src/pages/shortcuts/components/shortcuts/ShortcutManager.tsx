@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Button, Card, GetLicense, Switch } from "@/components";
-import { RotateCcw, AlertCircle, Keyboard, Lock } from "lucide-react";
+import { Button, Card, Switch } from "@/components";
+import { RotateCcw, AlertCircle, Keyboard } from "lucide-react";
 import {
   getAllShortcutActions,
   getShortcutsConfig,
@@ -12,11 +12,9 @@ import {
 } from "@/lib";
 import { ShortcutAction, ShortcutBinding } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
-import { useApp } from "@/contexts";
 import { ShortcutRecorder } from "./ShortcutRecorder";
 
 export const ShortcutManager = () => {
-  const { hasActiveLicense } = useApp();
   const [actions, setActions] = useState<ShortcutAction[]>([]);
   const [bindings, setBindings] = useState<Record<string, ShortcutBinding>>({});
   const [editingAction, setEditingAction] = useState<string | null>(null);
@@ -25,11 +23,11 @@ export const ShortcutManager = () => {
 
   useEffect(() => {
     loadShortcuts();
-  }, [hasActiveLicense]);
+  }, []);
 
   const loadShortcuts = () => {
     const config = getShortcutsConfig();
-    const allActions = getAllShortcutActions(hasActiveLicense);
+    const allActions = getAllShortcutActions(true);
     setActions(allActions);
     setBindings(config.bindings);
   };
@@ -134,7 +132,6 @@ export const ShortcutManager = () => {
           <p className="text-sm text-muted-foreground">
             {actions.length} shortcut{actions.length !== 1 ? "s" : ""}{" "}
             configured
-            {!hasActiveLicense && " • License required for customization"}
           </p>
         </div>
         <div className="flex gap-2">
@@ -180,27 +177,7 @@ export const ShortcutManager = () => {
         </div>
       )}
 
-      {/* License Prompt for Non-Licensed Users */}
-      {!hasActiveLicense && (
-        <Card className="p-4 bg-primary/5 border-primary/20">
-          <div className="flex items-start gap-3">
-            <Lock className="size-4 lg:size-5 text-primary mt-0.5" />
-            <div className="flex-1 space-y-2">
-              <p className="text-xs lg:text-sm font-medium">
-                Unlock Shortcut Customization
-              </p>
-              <p className="text-[10px] lg:text-xs text-muted-foreground">
-                Get a license to customize keyboard shortcuts to your
-                preference.
-              </p>
-              <GetLicense
-                buttonText="Get License"
-                buttonClassName="w-full mt-2"
-              />
-            </div>
-          </div>
-        </Card>
-      )}
+
 
       {/* Flat Shortcuts List */}
       <div className="space-y-3">
@@ -210,7 +187,7 @@ export const ShortcutManager = () => {
             key: getPlatformDefaultKey(action),
             enabled: true,
           };
-          const isLocked = !hasActiveLicense;
+          const isLocked = false;
           const isEditing = editingAction === action.id;
 
           return (

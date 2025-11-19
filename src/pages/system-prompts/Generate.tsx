@@ -3,29 +3,19 @@ import {
   PopoverContent,
   PopoverTrigger,
   Button,
-  GetLicense,
   Textarea,
 } from "@/components";
 import { SparklesIcon } from "lucide-react";
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
-import { useApp } from "@/contexts";
 
 interface GenerateSystemPromptProps {
   onGenerate: (prompt: string, promptName: string) => void;
 }
 
-interface SystemPromptResponse {
-  prompt_name: string;
-  system_prompt: string;
-}
-
 export const GenerateSystemPrompt = ({
   onGenerate,
 }: GenerateSystemPromptProps) => {
-  const { hasActiveLicense } = useApp();
   const [userPrompt, setUserPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,28 +26,17 @@ export const GenerateSystemPrompt = ({
     }
 
     try {
-      setIsGenerating(true);
       setError(null);
 
-      const response = await invoke<SystemPromptResponse>(
-        "create_system_prompt",
-        {
-          userPrompt: userPrompt.trim(),
-        }
-      );
+      // Simple local generation without server calls
+      const promptName = userPrompt.substring(0, 50);
+      const systemPrompt = `You are an AI assistant. ${userPrompt.trim()}`;
 
-      if (response.system_prompt && response.prompt_name) {
-        onGenerate(response.system_prompt, response.prompt_name);
-        setIsOpen(false);
-        setUserPrompt("");
-      }
+      onGenerate(systemPrompt, promptName);
+      setIsOpen(false);
+      setUserPrompt("");
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to generate prompt";
-      setError(errorMessage);
-      console.error("Error generating system prompt:", err);
-    } finally {
-      setIsGenerating(false);
+      setError("Failed to generate prompt");
     }
   };
 
@@ -82,8 +61,7 @@ export const GenerateSystemPrompt = ({
           <div>
             <p className="text-sm font-medium mb-1">Generate a system prompt</p>
             <p className="text-xs text-muted-foreground">
-              Describe the AI behavior you want, and we'll generate a prompt for
-              you.
+              Describe the AI behavior you want, and we'll create a basic prompt for you.
             </p>
           </div>
 
@@ -95,42 +73,17 @@ export const GenerateSystemPrompt = ({
               setUserPrompt(e.target.value);
               setError(null);
             }}
-            disabled={isGenerating}
           />
 
           {error && <p className="text-xs text-destructive">{error}</p>}
 
-          {hasActiveLicense ? (
-            <Button
-              className="w-full"
-              onClick={handleGenerate}
-              disabled={!userPrompt.trim() || isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <SparklesIcon className="h-4 w-4 animate-pulse" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <SparklesIcon className="h-4 w-4" />
-                  Generate
-                </>
-              )}
-            </Button>
-          ) : (
-            <div className="w-full flex flex-col gap-3">
-              <p className="text-sm font-medium text-muted-foreground">
-                You need an active license to use this feature. Click the button
-                below to get a license.
-              </p>
-              <GetLicense
-                buttonText="Get License"
-                buttonClassName="w-full"
-                setState={setIsOpen}
-              />
-            </div>
-          )}
+          <Button
+            className="w-full"
+            onClick={handleGenerate}
+            disabled={!userPrompt.trim()}
+          >
+            Generate Prompt
+          </Button>
         </div>
       </PopoverContent>
     </Popover>
