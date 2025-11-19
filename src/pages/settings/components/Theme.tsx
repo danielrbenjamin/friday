@@ -1,4 +1,4 @@
-import { useApp, useTheme } from "@/contexts";
+import { useTheme } from "@/contexts";
 import { Header, Label, Slider, Button } from "@/components";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import {

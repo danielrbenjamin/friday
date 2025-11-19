@@ -8,7 +8,7 @@ interface ChatScreenshotProps {
   isLoading: boolean;
   captureScreenshot: () => Promise<void>;
   isScreenshotLoading: boolean;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export const ChatScreenshot = ({

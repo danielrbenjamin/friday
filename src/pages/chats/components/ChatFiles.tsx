@@ -17,7 +17,7 @@ interface ChatFilesProps {
   isLoading: boolean;
   isFilesPopoverOpen: boolean;
   setIsFilesPopoverOpen: (open: boolean) => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export const ChatFiles = ({
